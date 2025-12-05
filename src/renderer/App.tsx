@@ -1,7 +1,8 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useState } from 'react';
-import WebcamSelector, { VideoDevice } from './WebcamSelector';
+import WebcamSelector from './components/webcam/WebcamSelector';
+import { VideoDevice } from './types/webcam';
 
 function CardEyeMate() {
   const [selectedCamera, setSelectedCamera] = useState<VideoDevice | null>(
