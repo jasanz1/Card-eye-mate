@@ -2,7 +2,11 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example';
+export type Channels =
+  | 'save-image'
+  | 'register-global-shortcut'
+  | 'unregister-global-shortcut';
+export type ListenChannels = 'trigger-capture';
 
 const electronHandler = {
   ipcRenderer: {
@@ -20,6 +24,13 @@ const electronHandler = {
     },
     once(channel: Channels, func: (...args: unknown[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
+    },
+    onCapture(func: () => void) {
+      const subscription = () => func();
+      ipcRenderer.on('trigger-capture', subscription);
+      return () => {
+        ipcRenderer.removeListener('trigger-capture', subscription);
+      };
     },
   },
 };

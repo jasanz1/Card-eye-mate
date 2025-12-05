@@ -9,7 +9,8 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import fs from 'fs';
+import { app, BrowserWindow, shell, ipcMain, globalShortcut } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -25,10 +26,60 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+ipcMain.on('register-global-shortcut', async (event, key) => {
+  try {
+    // Unregister any existing shortcut first
+    globalShortcut.unregisterAll();
+
+    // Register the new shortcut
+    const ret = globalShortcut.register(key, () => {
+      if (mainWindow) {
+        mainWindow.webContents.send('trigger-capture');
+      }
+    });
+
+    if (!ret) {
+      console.error('Global shortcut registration failed');
+    } else {
+      console.log('Global shortcut registered:', key);
+    }
+  } catch (error) {
+    console.error('Error registering global shortcut:', error);
+  }
+});
+
+ipcMain.on('unregister-global-shortcut', async () => {
+  globalShortcut.unregisterAll();
+  console.log('Global shortcuts unregistered');
+});
+
+ipcMain.on('save-image', async (event, dataUrl) => {
+  try {
+    const matches = dataUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (matches.length !== 3) {
+      throw new Error('Invalid input string');
+    }
+
+    const buffer = Buffer.from(matches[2], 'base64');
+    const capturesDir = path.join(__dirname, '../../captures');
+
+    if (!fs.existsSync(capturesDir)) {
+      fs.mkdirSync(capturesDir, { recursive: true });
+    }
+
+    const filename = `capture-${Date.now()}.png`;
+    const filePath = path.join(capturesDir, filename);
+
+    fs.writeFile(filePath, buffer, (err) => {
+      if (err) {
+        console.error('Failed to save image:', err);
+      } else {
+        console.log('Image saved successfully:', filePath);
+      }
+    });
+  } catch (error) {
+    console.error('Error saving image:', error);
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -117,6 +168,9 @@ const createWindow = async () => {
  */
 
 app.on('window-all-closed', () => {
+  // Unregister all shortcuts when app is closing
+  globalShortcut.unregisterAll();
+
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
   if (process.platform !== 'darwin') {
