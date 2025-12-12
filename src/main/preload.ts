@@ -4,6 +4,8 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
   | 'save-image'
+  | 'process-image'
+  | 'custom-process-image'
   | 'register-global-shortcut'
   | 'unregister-global-shortcut';
 export type ListenChannels = 'trigger-capture';

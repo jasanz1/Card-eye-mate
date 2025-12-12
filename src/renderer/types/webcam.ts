@@ -11,6 +11,8 @@ export type ImageCrop = {
     height: number;
 };
 
+export type CaptureMode = 'local' | 'api' | 'custom';
+
 export type WebcamSelectorProps = {
     selectedCamera: VideoDevice | null;
     onCameraChange: (device: VideoDevice | null) => void;

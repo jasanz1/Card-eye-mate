@@ -82,6 +82,37 @@ ipcMain.on('save-image', async (event, dataUrl) => {
   }
 });
 
+ipcMain.on('process-image', async (event, { dataUrl, apiKey }) => {
+  try {
+    // In a real app, this would send the image to an API
+    console.log(`Processing image via API with Key: ${apiKey ? '***' : 'Missing'}...`);
+
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log('Image processed successfully');
+
+    // You could send a response back to the renderer if needed
+    // event.reply('process-image-complete', { success: true });
+  } catch (error) {
+    console.error('Error processing image:', error);
+  }
+});
+
+ipcMain.on('custom-process-image', async (event, { dataUrl, apiKey, apiUrl }) => {
+  try {
+    // Placeholder for custom processing logic
+    console.log(`Processing via Custom Processor at ${apiUrl} with Key: ${apiKey ? '***' : 'Missing'}...`);
+
+    // Simulate delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    console.log('Custom image processed successfully');
+  } catch (error) {
+    console.error('Error in custom processing:', error);
+  }
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

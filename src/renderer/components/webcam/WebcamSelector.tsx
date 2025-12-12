@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { WebcamSelectorProps } from '../../types/webcam';
+import { WebcamSelectorProps, CaptureMode } from '../../types/webcam';
 import { useDeviceList } from '../../hooks/useDeviceList';
 import { useWebcam } from '../../hooks/useWebcam';
 import { useImageCapture } from '../../hooks/useImageCapture';
@@ -33,9 +33,13 @@ const WebcamSelector: React.FC<WebcamSelectorProps> = ({
         toggleVideoPreview,
     } = useWebcam(selectedDeviceId, updateDeviceStatus);
 
+    const [captureMode, setCaptureMode] = React.useState<CaptureMode>('local');
+    const [apiKey, setApiKey] = React.useState('');
+    const [apiUrl, setApiUrl] = React.useState('');
+
     // Image capture
     const { captureImage, captureStatus, imageCropRef } =
-        useImageCapture(videoRef);
+        useImageCapture(videoRef, captureMode, apiKey, apiUrl);
 
     // Crop editor
     const {
@@ -133,6 +137,12 @@ const WebcamSelector: React.FC<WebcamSelectorProps> = ({
                     onSetRecordingKey={setIsRecordingKey}
                     imageCrop={imageCrop}
                     onClearCrop={clearCrop}
+                    captureMode={captureMode}
+                    onSetCaptureMode={setCaptureMode}
+                    apiKey={apiKey}
+                    onSetApiKey={setApiKey}
+                    apiUrl={apiUrl}
+                    onSetApiUrl={setApiUrl}
                 />
 
                 <VideoPreviewModal

@@ -1,7 +1,12 @@
 import { useState, useRef, useCallback } from 'react';
 import { ImageCrop } from '../types/webcam';
 
-export const useImageCapture = (videoRef: React.RefObject<HTMLVideoElement | null>) => {
+export const useImageCapture = (
+    videoRef: React.RefObject<HTMLVideoElement | null>,
+    captureMode: 'local' | 'api' | 'custom',
+    apiKey?: string,
+    apiUrl?: string,
+) => {
     const [captureStatus, setCaptureStatus] = useState<string | null>(null);
     const imageCropRef = useRef<ImageCrop | null>(null);
 
@@ -36,8 +41,19 @@ export const useImageCapture = (videoRef: React.RefObject<HTMLVideoElement | nul
                         ctx.drawImage(videoRef.current, 0, 0);
                     }
                     const dataUrl = canvas.toDataURL('image/png');
-                    window.electron.ipcRenderer.sendMessage('save-image', dataUrl);
-                    setCaptureStatus('Captured!');
+
+                    if (captureMode === 'api') {
+                        window.electron.ipcRenderer.sendMessage('process-image', { dataUrl, apiKey });
+                        setCaptureStatus('Sent to API!');
+                    } else if (captureMode === 'custom') {
+                        window.electron.ipcRenderer.sendMessage('custom-process-image', { dataUrl, apiKey, apiUrl });
+                        setCaptureStatus('Sent to Custom Processor!');
+                    }
+                    else {
+                        window.electron.ipcRenderer.sendMessage('save-image', dataUrl);
+                        setCaptureStatus('Saved Locally!');
+                    }
+
                     setTimeout(() => setCaptureStatus(null), 2000);
                 }
             } catch (e) {
@@ -46,7 +62,7 @@ export const useImageCapture = (videoRef: React.RefObject<HTMLVideoElement | nul
                 setTimeout(() => setCaptureStatus(null), 2000);
             }
         }
-    }, [videoRef]);
+    }, [videoRef, captureMode, apiKey, apiUrl]);
 
     return {
         captureImage,

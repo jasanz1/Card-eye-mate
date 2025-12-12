@@ -30,6 +30,10 @@ export const VideoPreviewModal: React.FC<Props> = ({
     onMouseMove,
     onMouseUp,
 }) => {
+    const closeCropMode = () => {
+        onCancelCrop();
+        onClose();
+    };
     return (
         <div className={show ? 'modal is-active' : 'modal'}>
             <div
@@ -102,7 +106,7 @@ export const VideoPreviewModal: React.FC<Props> = ({
                         >
                             Save Crop
                         </button>
-                        <button type="button" className="button" onClick={onCancelCrop}>
+                        <button type="button" className="button" onClick={closeCropMode}>
                             Cancel
                         </button>
                     </footer>
@@ -112,7 +116,7 @@ export const VideoPreviewModal: React.FC<Props> = ({
                 type="button"
                 className="modal-close is-large"
                 aria-label="close"
-                onClick={isCropMode ? onCancelCrop : onClose}
+                onClick={isCropMode ? closeCropMode : onClose}
             />
         </div>
     );
