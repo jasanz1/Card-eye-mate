@@ -1,22 +1,48 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import WebcamSelector from './components/webcam/WebcamSelector';
 import { VideoDevice } from './types/webcam';
+import { OverlaySettings } from './components/overlay/OverlaySettings';
+import { useOverlayServer } from './hooks/useOverlayServer';
 
 function CardEyeMate() {
-  const [selectedCamera, setSelectedCamera] = useState<VideoDevice | null>(
-    null,
-  );
+  const [selectedCamera, setSelectedCamera] = useState<VideoDevice | null>(null);
+  const { startServer } = useOverlayServer();
+  const [showOverlaySettings, setShowOverlaySettings] = useState(false);
+
+  useEffect(() => {
+    const shouldAutostart = localStorage.getItem('overlayAutostart') === 'true';
+    if (shouldAutostart) {
+      const port = Number(localStorage.getItem('overlayPort') || '3030');
+      startServer(port);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <section className="section">
       <div className="glass-card" style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <h4 className="title is-4">📹 Card Eye Mate</h4>
+        <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
+          <h4 className="title is-4 mb-0">📹 Card Eye Mate</h4>
+          <button
+            className={`button is-small ${showOverlaySettings ? 'is-selected' : 'is-ghost'}`}
+            onClick={() => setShowOverlaySettings(!showOverlaySettings)}
+          >
+            {showOverlaySettings ? 'Hide Overlay Settings' : '⚙️ Overlay Settings'}
+          </button>
+        </div>
         <WebcamSelector
           selectedCamera={selectedCamera}
           onCameraChange={setSelectedCamera}
         />
       </div>
+
+      {showOverlaySettings && (
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <OverlaySettings embedded />
+        </div>
+      )}
     </section>
   );
 }

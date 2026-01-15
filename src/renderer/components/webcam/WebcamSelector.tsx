@@ -5,6 +5,8 @@ import { useWebcam } from '../../hooks/useWebcam';
 import { useImageCapture } from '../../hooks/useImageCapture';
 import { useCropEditor } from '../../hooks/useCropEditor';
 import { useGlobalHotkey } from '../../hooks/useGlobalHotkey';
+import { useOverlayServer } from '../../hooks/useOverlayServer';
+import { useStreamBroadcaster } from '../../hooks/useStreamBroadcaster';
 import { CameraControls } from './CameraControls';
 import { VideoPreviewModal } from './VideoPreviewModal';
 
@@ -31,6 +33,9 @@ const WebcamSelector: React.FC<WebcamSelectorProps> = ({
         stopCurrentStream,
         toggleVideoPreview,
     } = useWebcam(selectedDeviceId, updateDeviceStatus);
+
+    const { updateConfig } = useOverlayServer();
+    useStreamBroadcaster(videoRef, !!selectedCamera);
 
     const [captureMode, setCaptureMode] = React.useState<CaptureMode>('local');
     const [apiKey, setApiKey] = React.useState('');
@@ -90,6 +95,7 @@ const WebcamSelector: React.FC<WebcamSelectorProps> = ({
     useEffect(() => {
         if (selectedCamera) {
             startStream(selectedCamera.deviceId);
+            updateConfig({ deviceId: selectedCamera.deviceId });
         } else {
             stopCurrentStream();
         }

@@ -7,15 +7,21 @@ export type Channels =
   | 'process-image'
   | 'custom-process-image'
   | 'register-global-shortcut'
-  | 'unregister-global-shortcut';
-export type ListenChannels = 'trigger-capture';
+  | 'unregister-global-shortcut'
+  | 'start-overlay-server'
+  | 'stop-overlay-server'
+  | 'update-overlay-data'
+  | 'update-overlay-config'
+  | 'get-overlay-status'
+  | 'broadcast-video-frame';
+export type ListenChannels = 'trigger-capture' | 'overlay-server-status';
 
 const electronHandler = {
   ipcRenderer: {
     sendMessage(channel: Channels, ...args: unknown[]) {
       ipcRenderer.send(channel, ...args);
     },
-    on(channel: Channels, func: (...args: unknown[]) => void) {
+    on(channel: Channels | ListenChannels, func: (...args: unknown[]) => void) {
       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
         func(...args);
       ipcRenderer.on(channel, subscription);

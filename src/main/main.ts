@@ -15,6 +15,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { OverlayServer } from './OverlayServer';
 
 class AppUpdater {
   constructor() {
@@ -24,7 +25,9 @@ class AppUpdater {
   }
 }
 
+
 let mainWindow: BrowserWindow | null = null;
+let overlayServer: OverlayServer | null = null;
 
 ipcMain.on('register-global-shortcut', async (event, key) => {
   try {
@@ -110,6 +113,130 @@ ipcMain.on('custom-process-image', async (event, { dataUrl, apiKey, apiUrl }) =>
     console.log('Custom image processed successfully');
   } catch (error) {
     console.error('Error in custom processing:', error);
+  }
+});
+
+// Overlay server IPC handlers
+ipcMain.on('start-overlay-server', async (event, config) => {
+  try {
+    if (overlayServer && overlayServer.isServerRunning()) {
+      event.reply('overlay-server-status', {
+        success: false,
+        error: 'Server is already running',
+      });
+      return;
+    }
+
+    const port = config?.port || 3030;
+    overlayServer = new OverlayServer(port);
+
+    await overlayServer.start();
+
+    const status = overlayServer.getStatus();
+    event.reply('overlay-server-status', {
+      success: true,
+      status,
+    });
+
+    console.log('Overlay server started successfully');
+  } catch (error) {
+    console.error('Error starting overlay server:', error);
+    event.reply('overlay-server-status', {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+ipcMain.on('stop-overlay-server', async (event) => {
+  try {
+    if (!overlayServer) {
+      event.reply('overlay-server-status', {
+        success: true,
+        status: { running: false },
+      });
+      return;
+    }
+
+    await overlayServer.stop();
+    overlayServer = null;
+
+    event.reply('overlay-server-status', {
+      success: true,
+      status: { running: false },
+    });
+
+    console.log('Overlay server stopped successfully');
+  } catch (error) {
+    console.error('Error stopping overlay server:', error);
+    event.reply('overlay-server-status', {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+ipcMain.on('update-overlay-data', async (event, cardData) => {
+  try {
+    if (!overlayServer || !overlayServer.isServerRunning()) {
+      event.reply('overlay-server-status', {
+        success: false,
+        error: 'Server is not running',
+      });
+      return;
+    }
+
+    overlayServer.updateCardData(cardData);
+    console.log('Overlay data updated:', cardData);
+  } catch (error) {
+    console.error('Error updating overlay data:', error);
+  }
+});
+
+ipcMain.on('update-overlay-config', async (event, config) => {
+  try {
+    if (!overlayServer || !overlayServer.isServerRunning()) {
+      event.reply('overlay-server-status', {
+        success: false,
+        error: 'Server is not running',
+      });
+      return;
+    }
+
+    overlayServer.updateConfig(config);
+    console.log('Overlay config updated:', config);
+  } catch (error) {
+    console.error('Error updating overlay config:', error);
+  }
+});
+
+ipcMain.on('broadcast-video-frame', (event, frameData) => {
+  if (overlayServer && overlayServer.isServerRunning()) {
+    overlayServer.broadcastFrame(frameData);
+  }
+});
+
+ipcMain.on('get-overlay-status', async (event) => {
+  try {
+    if (!overlayServer) {
+      event.reply('overlay-server-status', {
+        success: true,
+        status: { running: false },
+      });
+      return;
+    }
+
+    const status = overlayServer.getStatus();
+    event.reply('overlay-server-status', {
+      success: true,
+      status,
+    });
+  } catch (error) {
+    console.error('Error getting overlay status:', error);
+    event.reply('overlay-server-status', {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 });
 
@@ -201,6 +328,11 @@ const createWindow = async () => {
 app.on('window-all-closed', () => {
   // Unregister all shortcuts when app is closing
   globalShortcut.unregisterAll();
+
+  // Stop overlay server if running
+  if (overlayServer) {
+    overlayServer.stop().catch(console.error);
+  }
 
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed

@@ -102,12 +102,15 @@
   },
   "dependencies": {
     "@electron/notarize": "^3.0.0",
+    "cors": "^2.8.5",
     "electron-debug": "^4.1.0",
     "electron-log": "^5.3.2",
     "electron-updater": "^6.3.9",
+    "express": "^5.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.3.0"
+    "react-router-dom": "^7.3.0",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.7.1",
@@ -116,12 +119,15 @@
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
     "@types/jest": "^29.5.14",
     "@types/node": "22.13.10",
     "@types/react": "^19.0.11",
     "@types/react-dom": "^19.0.4",
     "@types/react-test-renderer": "^19.0.0",
     "@types/webpack-bundle-analyzer": "^4.7.0",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^8.26.1",
     "@typescript-eslint/parser": "^8.26.1",
     "browserslist-config-erb": "^0.0.3",
