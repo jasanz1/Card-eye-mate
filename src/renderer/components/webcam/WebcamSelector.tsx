@@ -98,11 +98,8 @@ const WebcamSelector: React.FC<WebcamSelectorProps> = ({
     }, [selectedCamera]);
 
     return (
-        <section className="section">
-            <div className="container">
-                {/* Title */}
-                <h1 className="title is-4">Webcam Selector</h1>
-
+        <section className="section" style={{ padding: '0' }}>
+            <div className="container" style={{ padding: '0' }}>
                 {captureStatus && (
                     <div
                         className="notification is-success"
@@ -112,12 +109,11 @@ const WebcamSelector: React.FC<WebcamSelectorProps> = ({
                             right: '20px',
                             zIndex: 9999,
                             width: 'auto',
-                            minWidth: '200px',
+                            minWidth: '250px',
                             textAlign: 'center',
-                            boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
                         }}
                     >
-                        {captureStatus}
+                        ✅ {captureStatus}
                     </div>
                 )}
 

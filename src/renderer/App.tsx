@@ -10,11 +10,13 @@ function CardEyeMate() {
   );
   return (
     <section className="section">
-      <h4 className=""> Video </h4>
-      <WebcamSelector
-        selectedCamera={selectedCamera}
-        onCameraChange={setSelectedCamera}
-      />
+      <div className="glass-card" style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <h4 className="title is-4">📹 Card Eye Mate</h4>
+        <WebcamSelector
+          selectedCamera={selectedCamera}
+          onCameraChange={setSelectedCamera}
+        />
+      </div>
     </section>
   );
 }
