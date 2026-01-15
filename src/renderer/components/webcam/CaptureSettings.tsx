@@ -29,7 +29,7 @@ export const CaptureSettings: React.FC<Props> = ({
 }) => {
     return (
         <>
-            {/* Capture Settings Row */}
+            {/* Capture Key & Crop Settings */}
             <div className="field is-grouped is-align-items-center">
                 <div className="control">
                     <button
@@ -44,7 +44,22 @@ export const CaptureSettings: React.FC<Props> = ({
                     <p className="help">Press the key to take a snapshot.</p>
                 </div>
 
-                <div className="control ml-4">
+                {imageCrop && (
+                    <div className="control ml-4">
+                        <button
+                            type="button"
+                            className="button is-danger"
+                            onClick={onClearCrop}
+                        >
+                            Clear Crop
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* Capture Mode & API Settings */}
+            <div className="field is-grouped is-align-items-center">
+                <div className="control">
                     <div className="field has-addons">
                         <div className="control">
                             <button
@@ -99,18 +114,6 @@ export const CaptureSettings: React.FC<Props> = ({
                             onChange={(e) => onSetApiUrl(e.target.value)}
                             style={{ maxWidth: '200px' }}
                         />
-                    </div>
-                )}
-
-                {imageCrop && (
-                    <div className="control">
-                        <button
-                            type="button"
-                            className="button is-danger"
-                            onClick={onClearCrop}
-                        >
-                            Clear Crop
-                        </button>
                     </div>
                 )}
             </div>

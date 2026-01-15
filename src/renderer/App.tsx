@@ -15,7 +15,6 @@ function CardEyeMate() {
         selectedCamera={selectedCamera}
         onCameraChange={setSelectedCamera}
       />
-      <p> currently selected camera: {selectedCamera?.label}</p>
     </section>
   );
 }
