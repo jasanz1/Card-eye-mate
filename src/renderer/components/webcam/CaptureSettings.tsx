@@ -29,25 +29,57 @@ export const CaptureSettings: React.FC<Props> = ({
 }) => {
     return (
         <>
-            {/* Capture Key & Crop Settings */}
+            {/* Combined Capture Settings */}
             <div className="card-section">
                 <label className="label">Capture Settings</label>
-                <div className="field is-grouped is-align-items-center">
+
+                {/* Capture Key + Mode Selection on Same Row */}
+                <div className="field is-grouped is-align-items-center" style={{ marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div className="control">
                         <button
                             type="button"
                             className={`button ${isRecordingKey ? 'is-warning' : 'is-primary'}`}
                             onClick={() => onSetRecordingKey(true)}
+                            style={{ minWidth: '180px' }}
                         >
-                            {isRecordingKey ? '⌨️ Press any key...' : `⌨️ Capture Key: ${captureKey}`}
+                            {isRecordingKey ? '⌨️ Press any key...' : `⌨️Capture Key: ${captureKey}`}
                         </button>
                     </div>
+
                     <div className="control">
-                        <p className="help">Press the key to take a snapshot.</p>
+                        <div className="field has-addons">
+                            <div className="control">
+                                <button
+                                    type="button"
+                                    className={`button ${captureMode === 'local' ? 'is-selected is-info' : ''}`}
+                                    onClick={() => onSetCaptureMode('local')}
+                                >
+                                    💾 Local
+                                </button>
+                            </div>
+                            <div className="control">
+                                <button
+                                    type="button"
+                                    className={`button ${captureMode === 'api' ? 'is-selected is-info' : ''}`}
+                                    onClick={() => onSetCaptureMode('api')}
+                                >
+                                    🔗 Card Eye
+                                </button>
+                            </div>
+                            <div className="control">
+                                <button
+                                    type="button"
+                                    className={`button ${captureMode === 'custom' ? 'is-selected is-info' : ''}`}
+                                    onClick={() => onSetCaptureMode('custom')}
+                                >
+                                    ⚙️ Custom
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     {imageCrop && (
-                        <div className="control ml-4">
+                        <div className="control">
                             <button
                                 type="button"
                                 className="button is-danger"
@@ -58,46 +90,11 @@ export const CaptureSettings: React.FC<Props> = ({
                         </div>
                     )}
                 </div>
-            </div>
 
-            {/* Capture Mode & API Settings */}
-            <div className="card-section">
-                <label className="label">Capture Mode</label>
-                <div className="field is-grouped is-align-items-center" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <div className="control">
-                        <div className="field has-addons">
-                            <div className="control">
-                                <button
-                                    type="button"
-                                    className={`button ${captureMode === 'local' ? 'is-selected is-info' : ''}`}
-                                    onClick={() => onSetCaptureMode('local')}
-                                >
-                                    💾 Local Save
-                                </button>
-                            </div>
-                            <div className="control">
-                                <button
-                                    type="button"
-                                    className={`button ${captureMode === 'api' ? 'is-selected is-info' : ''}`}
-                                    onClick={() => onSetCaptureMode('api')}
-                                >
-                                    🔗 Card Eye Mate
-                                </button>
-                            </div>
-                            <div className="control">
-                                <button
-                                    type="button"
-                                    className={`button ${captureMode === 'custom' ? 'is-selected is-info' : ''}`}
-                                    onClick={() => onSetCaptureMode('custom')}
-                                >
-                                    ⚙️ Custom Processor
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {(captureMode === 'api' || captureMode === 'custom') && (
-                        <div className="control" style={{ flexGrow: 1, maxWidth: '200px' }}>
+                {/* API Configuration Inputs */}
+                {(captureMode === 'api' || captureMode === 'custom') && (
+                    <div className="field is-grouped">
+                        <div className="control is-expanded">
                             <input
                                 className="input"
                                 type="password"
@@ -106,20 +103,20 @@ export const CaptureSettings: React.FC<Props> = ({
                                 onChange={(e) => onSetApiKey(e.target.value)}
                             />
                         </div>
-                    )}
 
-                    {captureMode === 'custom' && (
-                        <div className="control" style={{ flexGrow: 1, maxWidth: '250px' }}>
-                            <input
-                                className="input"
-                                type="password"
-                                placeholder="API URL"
-                                value={apiUrl}
-                                onChange={(e) => onSetApiUrl(e.target.value)}
-                            />
-                        </div>
-                    )}
-                </div>
+                        {captureMode === 'custom' && (
+                            <div className="control is-expanded">
+                                <input
+                                    className="input"
+                                    type="password"
+                                    placeholder="API URL"
+                                    value={apiUrl}
+                                    onChange={(e) => onSetApiUrl(e.target.value)}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {imageCrop && (

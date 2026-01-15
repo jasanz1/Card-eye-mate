@@ -6,7 +6,6 @@ import { useImageCapture } from '../../hooks/useImageCapture';
 import { useCropEditor } from '../../hooks/useCropEditor';
 import { useGlobalHotkey } from '../../hooks/useGlobalHotkey';
 import { CameraControls } from './CameraControls';
-import { CaptureSettings } from './CaptureSettings';
 import { VideoPreviewModal } from './VideoPreviewModal';
 
 const WebcamSelector: React.FC<WebcamSelectorProps> = ({
@@ -125,9 +124,6 @@ const WebcamSelector: React.FC<WebcamSelectorProps> = ({
                     onShowPreview={toggleVideoPreview}
                     onEditCrop={toggleCropMode}
                     isCropMode={isCropMode}
-                />
-
-                <CaptureSettings
                     captureKey={captureKey}
                     isRecordingKey={isRecordingKey}
                     onSetRecordingKey={setIsRecordingKey}
