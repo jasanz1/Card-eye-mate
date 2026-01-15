@@ -10,13 +10,10 @@ export const useStreamBroadcaster = (
     const animationFrameRef = useRef<number | undefined>(undefined);
     const lastFrameTimeRef = useRef<number>(0);
 
-    // Create hidden canvas once
+    // Ensure canvas element is created and assigned to ref
     useEffect(() => {
         if (!canvasRef.current) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 854; // 480p equivalent (16:9) - good balance of quality/perf
-            canvas.height = 480;
-            canvasRef.current = canvas;
+            canvasRef.current = document.createElement('canvas');
         }
     }, []);
 
@@ -30,18 +27,25 @@ export const useStreamBroadcaster = (
         }
 
         const broadcastFrame = (timestamp: number) => {
-            // Target ~24fps to reduce IPC/CPU load (approx 41ms per frame)
-            if (timestamp - lastFrameTimeRef.current < 41) {
+            // Target ~60fps (approx 16ms) - virtually no throttle needed for local
+            if (timestamp - lastFrameTimeRef.current < 16) {
                 animationFrameRef.current = requestAnimationFrame(broadcastFrame);
                 return;
             }
 
             if (videoRef.current && canvasRef.current && videoRef.current.readyState >= 2) {
+                // Ensure canvas matches video resolution
+                if (canvasRef.current.width !== videoRef.current.videoWidth ||
+                    canvasRef.current.height !== videoRef.current.videoHeight) {
+                    canvasRef.current.width = videoRef.current.videoWidth;
+                    canvasRef.current.height = videoRef.current.videoHeight;
+                }
+
                 const ctx = canvasRef.current.getContext('2d');
                 if (ctx) {
                     ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-                    // Use JPEG with 0.6 quality for lower bandwidth
-                    const frameData = canvasRef.current.toDataURL('image/jpeg', 0.6);
+                    // High quality JPEG for local streaming
+                    const frameData = canvasRef.current.toDataURL('image/jpeg', 0.9);
                     window.electron.ipcRenderer.sendMessage('broadcast-video-frame', frameData);
                 }
                 lastFrameTimeRef.current = timestamp;
@@ -59,3 +63,4 @@ export const useStreamBroadcaster = (
         };
     }, [enabled, serverStatus?.running, videoRef]);
 };
+
