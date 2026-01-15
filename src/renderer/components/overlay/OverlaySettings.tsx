@@ -166,7 +166,7 @@ export const OverlaySettings: React.FC<OverlaySettingsProps> = ({ embedded = fal
 
                 {serverStatus?.running && (
                     <div className="mt-4">
-                        <label className="label mt-3">OBS / XSplit Browser Source URLs:</label>
+                        <label className="label mt-3">Browser Source URLs:</label>
 
                         <div className="field has-addons mb-2">
                             <div className="control is-expanded">
