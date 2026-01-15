@@ -9,7 +9,6 @@ import { useOverlayServer } from './hooks/useOverlayServer';
 function CardEyeMate() {
   const [selectedCamera, setSelectedCamera] = useState<VideoDevice | null>(null);
   const { startServer } = useOverlayServer();
-  const [showOverlaySettings, setShowOverlaySettings] = useState(false);
 
   useEffect(() => {
     const shouldAutostart = localStorage.getItem('overlayAutostart') === 'true';
@@ -25,12 +24,6 @@ function CardEyeMate() {
       <div className="glass-card" style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
           <h4 className="title is-4 mb-0">📹 Card Eye Mate</h4>
-          <button
-            className={`button is-small ${showOverlaySettings ? 'is-selected' : 'is-ghost'}`}
-            onClick={() => setShowOverlaySettings(!showOverlaySettings)}
-          >
-            {showOverlaySettings ? 'Hide Overlay Settings' : '⚙️ Overlay Settings'}
-          </button>
         </div>
         <WebcamSelector
           selectedCamera={selectedCamera}
@@ -38,11 +31,9 @@ function CardEyeMate() {
         />
       </div>
 
-      {showOverlaySettings && (
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <OverlaySettings embedded />
-        </div>
-      )}
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <OverlaySettings embedded />
+      </div>
     </section>
   );
 }
