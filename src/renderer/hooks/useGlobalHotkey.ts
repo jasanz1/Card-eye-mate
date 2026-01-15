@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 export const useGlobalHotkey = (captureImage: () => void) => {
-    const [captureKey, setCaptureKey] = useState<string>('c');
+    const [captureKey, setCaptureKey] = useState<string>('F8');
     const [isRecordingKey, setIsRecordingKey] = useState<boolean>(false);
 
     // Keep latest captureImage in strict ref to avoid re-running effects
